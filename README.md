@@ -26,6 +26,8 @@ lightning_logs：存放训练好的模型和日志
 
 以下是我在基于https://link.zhihu.com/?target=https%3A//github.com/miracleyoo/pytorch-lightning-template 进行修改为文本分类中使用的一些理解。
 
+- 这里没有指定使用的gpu，使用的是cpu训练的，怎么使用gpu可参考最后贴的那个知乎链接。
+
 - data下的simple_data.py和里面的SimpleData类是下划线和驼峰一致的，在main.py中指定dataset为simple_data，在data_interface.py中会调用instancialize()获取构建的数据的dataset，也就是SimpleData。
 - model下的simple_model和里面的SimpleModel类是下划线和驼峰一致的，在main.py中指定model_name为simple_model，在model_interface.py中会调用load_model()获取构建的数据的model，也就是SimpleModel。
 - 在simple_dataset.py里面构建的是普通的pytorch格式的dataset，如果需要在dataloader中传入collate_fn，可以在data_common.py里面查看样例。构建为dataloader是在data_interface.py里面。主要是setup()，会根据trainer.fit()、trainer.test()、trainer.predict()来判断是哪一步，然后分别生成不同的dataset。
