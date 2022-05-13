@@ -14,7 +14,6 @@ class Bilstm(nn.Module):
                  output_dim,
                  num_layers,
                  biFlag,
-                 device=None,
                  dropout=0.5):
         # input_dim 输入特征维度d_input
         # hidden_dim 隐藏层的大小
@@ -44,23 +43,24 @@ class Bilstm(nn.Module):
 
         # self.to(self.device)
 
-    def init_hidden(self, batch_size):
+    def init_hidden(self, batch_size, x):
         # 定义初始的hidden state
         # return (torch.zeros(self.num_layers * self.bi_num, batch_size, self.hidden_dim).to(self.device),
         #         torch.zeros(self.num_layers * self.bi_num, batch_size, self.hidden_dim).to(self.device))
-        return (torch.zeros(self.num_layers * self.bi_num, batch_size, self.hidden_dim),
-            torch.zeros(self.num_layers * self.bi_num, batch_size, self.hidden_dim))
+        return (torch.zeros(self.num_layers * self.bi_num, batch_size, self.hidden_dim).type_as(x),
+            torch.zeros(self.num_layers * self.bi_num, batch_size, self.hidden_dim).type_as(x))
 
 
     def forward(self, x, length):
         # 输入原始数据x，标签y，以及长度length
         # 准备
+
         batch_size = x.size(0)
         # pack sequence
         x = pack_padded_sequence(x, length, batch_first=True)
 
         # run the network
-        hidden1 = self.init_hidden(batch_size)
+        hidden1 = self.init_hidden(batch_size, x)
         out, hidden1 = self.layer1(x, hidden1)
         # out,_=self.layerLSTM(x) is also ok if you don't want to refer to hidden state
         # unpack sequence
@@ -79,7 +79,6 @@ class SimpleModel(nn.Module):
                  output_dim,
                  num_layers,
                  biFlag,
-                 device,
                  dropout=0.5
                  ):
         super(SimpleModel, self).__init__()
@@ -90,10 +89,8 @@ class SimpleModel(nn.Module):
             output_dim,
             num_layers,
             biFlag,
-            device,
             dropout
         )
-        self.to(device)
 
     def forward(self, train_x, length):
         train_x = self.embedding(train_x)
